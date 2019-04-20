@@ -14,7 +14,7 @@ if [ ! -e "$LOCKFILE" ]; then
 fi
 
 (flock -n 3 || exit 0
-	docker stop "$CONTAINER_NAME" >/dev/null 2>&1
+	docker stop "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
 	echo "[*] Setting up repository submodules..."
 	git submodule deinit --all --force
@@ -22,15 +22,6 @@ fi
 
 	echo "[*] Copying packages from './packages' to build environment..."
 	for pkg in $(find "$REPOROOT"/packages -mindepth 1 -maxdepth 1 -type d); do
-		if [ ! -d "$REPOROOT/termux-packages/packages/$(basename "$pkg")" ]; then
-			cp -a "$pkg" "$REPOROOT"/termux-packages/packages/
-		else
-			echo "[!] Package '$(basename "$pkg")' already exists in build environment. Skipping."
-		fi
-	done
-
-	echo "[*] Copying packages from './unstable-packages/packages' to build environment..."
-	for pkg in $(find "$REPOROOT"/unstable-packages/packages -mindepth 1 -maxdepth 1 -type d); do
 		if [ ! -d "$REPOROOT/termux-packages/packages/$(basename "$pkg")" ]; then
 			cp -a "$pkg" "$REPOROOT"/termux-packages/packages/
 		else
